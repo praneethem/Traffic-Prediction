@@ -1,0 +1,5 @@
+{
+  "rule": "template day if >=90% of valid bins equal the same bin 7 days earlier or later",
+  "threshold": 0.9,
+  "frozen_from": "2017-2018 EDA, before any 2019 scoring"
+}

@@ -10,6 +10,7 @@ import pandas as pd
 
 from src.features import ALL_FEATURES, FEATURE_GROUPS          # noqa: F401  (re-exported)
 from src import metrics as M
+from src import quality as Q
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -39,12 +40,23 @@ def load_table(h, splits=None, columns=None):
     return df
 
 
+def clean_mask(df, last=None):
+    """Rows whose target day is not a repeated-template day (see src/quality.py). Pass last='2018-12-31 23:45' in
+    notebooks that must not open 2019."""
+    F = pd.read_parquet(DATA / "flow_15min_100.parquet")
+    if last is not None:
+        F = F.loc[:last]
+    return Q.row_mask(df, Q.template_days(F))
+
+
 def baseline_preds(df):
     """Raw-unit predictions of the three simple baselines."""
     return {name: (df[col] * df["sc"]).to_numpy("float64") for name, col in BASELINES.items()}
 
 
-def baseline_table(df_val):
+def baseline_table(df_val, mask=None):
+    if mask is not None:
+        df_val = df_val[mask]
     rows = []
     for name, p in baseline_preds(df_val).items():
         rows.append({"Model": name, **M.score(df_val["y_raw"], p)})
@@ -87,13 +99,15 @@ def read_best(name, h):
     return json.loads(f.read_text()) if f.exists() else None
 
 
-def leaderboard(split, h, names=None):
+def leaderboard(split, h, names=None, clean=False):
     """One row per model: MAE, RMSE, WAPE and skill vs the best baseline (best baseline chosen on VALIDATION)."""
     val = load_table(h, ["val"])
-    bb = best_baseline(val)
+    bb = best_baseline(val)          # always chosen on all validation rows, never on 2019
     rows = []
     for n in (names or available(split, h)):
         d = load_preds(split, n, h)
+        if clean:
+            d = d[clean_mask(d, last="2018-12-31 23:45" if split != "test" else None)]
         base = (d[BASELINES[bb]] * d["sc"]).to_numpy("float64")
         s = M.score(d["y_raw"], d["pred"])
         s["Skill"] = M.skill(s["MAE"], M.mae(d["y_raw"], base))
