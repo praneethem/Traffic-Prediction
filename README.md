@@ -1,8 +1,6 @@
 # Traffic Flow Forecasting on Bay Area Freeways
 
-ML course project, Topic 4: Traffic Prediction (IIIT Bangalore).
-Forecasts freeway flow 15 and 60 minutes ahead for 100 Bay Area sensors
-(LargeST dataset, 2017-2019).
+Forecasts freeway traffic flow 15 and 60 minutes ahead for 100 Bay Area sensors using the LargeST dataset (2017?2019).
 
 ## Setup
 py -3.12 -m venv .venv
