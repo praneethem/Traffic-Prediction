@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+/data/
+/models/
+/results/
+*.parquet
+*.h5
+*.joblib
+*.pkl
+.vscode/
