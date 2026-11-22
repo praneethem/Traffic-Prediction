@@ -1,0 +1,24 @@
+{
+  "model": "lgbm",
+  "h": 15,
+  "params": {
+    "reg_lambda": 10,
+    "num_leaves": 127,
+    "min_child_samples": 300,
+    "learning_rate": 0.05,
+    "feature_fraction": 1.0
+  },
+  "best_iter": 1414,
+  "val": {
+    "MAE": 47.96678186259282,
+    "RMSE": 78.19025434538672,
+    "WAPE": 0.05393208250838825,
+    "n": 350587
+  },
+  "fit_s_train": 87.1510717868805,
+  "predict_s_per_100k": 5.144183587774565,
+  "tune_total_s": 296.2762665748596,
+  "tune_rows": 300001,
+  "fit_rows": 992997,
+  "smoke": false
+}

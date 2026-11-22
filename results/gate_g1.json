@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": {
+    "Both leakage tests pass": true,
+    "LightGBM beats best baseline at 15 min": true,
+    "LightGBM beats best baseline at 60 min": true,
+    "Projected compute under 12 h": true
+  },
+  "projected_hours": 4.655998468613947
+}

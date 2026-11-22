@@ -1,0 +1,21 @@
+{
+  "model": "dt",
+  "h": 60,
+  "params": {
+    "max_depth": 14,
+    "min_samples_leaf": 50
+  },
+  "best_iter": null,
+  "val": {
+    "MAE": 70.05647351837372,
+    "RMSE": 111.48396176183687,
+    "WAPE": 0.07877769364897923,
+    "n": 350572
+  },
+  "fit_s_train": 24.207177877426147,
+  "predict_s_per_100k": 0.014544082833461557,
+  "tune_total_s": 90.10978817939758,
+  "tune_rows": 300001,
+  "fit_rows": 993004,
+  "smoke": false
+}
