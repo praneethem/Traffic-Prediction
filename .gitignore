@@ -4,7 +4,6 @@ __pycache__/
 .ipynb_checkpoints/
 /data/
 /models/
-/results/
 *.parquet
 *.h5
 *.joblib
