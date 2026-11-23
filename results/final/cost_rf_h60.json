@@ -1,0 +1,11 @@
+{
+  "model": "rf",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": null,
+  "fit_s": 159.04673099517822,
+  "predict_s_per_100k": 0.63885200050319,
+  "model_MB": 290.513199,
+  "smoke": false
+}

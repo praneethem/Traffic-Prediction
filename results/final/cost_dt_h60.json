@@ -1,0 +1,11 @@
+{
+  "model": "dt",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": null,
+  "fit_s": 65.3932044506073,
+  "predict_s_per_100k": 0.026244961146044153,
+  "model_MB": 0.627368,
+  "smoke": false
+}

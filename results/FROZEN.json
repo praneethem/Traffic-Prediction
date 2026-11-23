@@ -1,0 +1,33 @@
+{
+  "frozen_at": "2026-11-23T19:01:58",
+  "best_baseline_by_validation": {
+    "15": "Persistence",
+    "60": "4-week average"
+  },
+  "test_prediction_files": {
+    "test_ada_h15.parquet": "8aa6b9e08170b75c",
+    "test_ada_h60.parquet": "a4be3639de136913",
+    "test_cat_h15.parquet": "ffd8298e059cce18",
+    "test_cat_h60.parquet": "762afc882a9d0a3a",
+    "test_dt_h15.parquet": "98bf1dd43743d829",
+    "test_dt_h60.parquet": "2e03d3f499a2031a",
+    "test_gb_h15.parquet": "e665bde2f14094f3",
+    "test_gb_h60.parquet": "556ae9ee80a04bd8",
+    "test_lgbm_h15.parquet": "0c65f9990d945c50",
+    "test_lgbm_h15_seed43.parquet": "e7ed54749aa5837f",
+    "test_lgbm_h15_seed44.parquet": "4f9ce64319cdada9",
+    "test_lgbm_h60.parquet": "0f1ef8af013438b3",
+    "test_lgbm_h60_seed43.parquet": "5579c140e84a7649",
+    "test_lgbm_h60_seed44.parquet": "0e455a7cf419510b",
+    "test_pca_ridge_h15.parquet": "22c422ded18e9005",
+    "test_pca_ridge_h60.parquet": "4000fa15e46010f0",
+    "test_rf_h15.parquet": "19477b67952f590f",
+    "test_rf_h60.parquet": "1294b593c2adadef",
+    "test_ridge_h15.parquet": "b7ad0414834801b1",
+    "test_ridge_h60.parquet": "39093beb248f2b14",
+    "test_xgb_h15.parquet": "5b5776ddbe3650fd",
+    "test_xgb_h60.parquet": "9b8e22f21a81bf30"
+  },
+  "frozen_config": "3e44f6a5243c5472",
+  "headline_table": "79b733134ac29b93"
+}

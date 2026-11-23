@@ -1,0 +1,11 @@
+{
+  "model": "ridge",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": null,
+  "fit_s": 4.5845232009887695,
+  "predict_s_per_100k": 0.018974680579471527,
+  "model_MB": 0.001707,
+  "smoke": false
+}

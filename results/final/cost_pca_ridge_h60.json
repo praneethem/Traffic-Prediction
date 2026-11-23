@@ -1,0 +1,11 @@
+{
+  "model": "pca_ridge",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": null,
+  "fit_s": 1.3591845035552979,
+  "predict_s_per_100k": 0.033633777850927984,
+  "model_MB": 0.00658,
+  "smoke": false
+}

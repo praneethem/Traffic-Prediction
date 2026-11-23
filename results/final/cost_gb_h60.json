@@ -1,0 +1,11 @@
+{
+  "model": "gb",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": 300,
+  "fit_s": 2107.4555897712708,
+  "predict_s_per_100k": 1.3190225239427071,
+  "model_MB": 1.129548,
+  "smoke": false
+}

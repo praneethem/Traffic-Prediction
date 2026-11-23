@@ -1,0 +1,11 @@
+{
+  "model": "cat",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": 2000,
+  "fit_s": 388.23435163497925,
+  "predict_s_per_100k": 0.17999995485370457,
+  "model_MB": 8.467672,
+  "smoke": false
+}

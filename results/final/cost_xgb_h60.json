@@ -1,0 +1,11 @@
+{
+  "model": "xgb",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": 2088,
+  "fit_s": 202.59612441062927,
+  "predict_s_per_100k": 1.1912730571702945,
+  "model_MB": 32.364333,
+  "smoke": false
+}

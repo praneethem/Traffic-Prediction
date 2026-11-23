@@ -1,0 +1,11 @@
+{
+  "model": "ada",
+  "h": 60,
+  "seed": 42,
+  "fit_rows": 1343576,
+  "n_estimators": null,
+  "fit_s": 3798.992959499359,
+  "predict_s_per_100k": 1.2986977508036661,
+  "model_MB": 24.670918,
+  "smoke": false
+}

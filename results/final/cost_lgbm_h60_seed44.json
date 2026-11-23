@@ -1,0 +1,11 @@
+{
+  "model": "lgbm",
+  "h": 60,
+  "seed": 44,
+  "fit_rows": 1343576,
+  "n_estimators": 1695,
+  "fit_s": 247.75991225242615,
+  "predict_s_per_100k": 6.387438788467249,
+  "model_MB": 20.767713,
+  "smoke": false
+}
