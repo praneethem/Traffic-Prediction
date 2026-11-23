@@ -1,277 +1,143 @@
-# Complete Research Paper: Fast KDE via Chebyshev-HODLR
+# Traffic Flow Forecasting on Bay Area Freeways
 
-## 📄 Paper Information
+Topic 4 (Traffic Prediction), machine learning course project.
 
-**Title:** Fast Kernel Density Estimation via Chebyshev-Accelerated Hierarchical Matrices
+We forecast freeway traffic flow **15 and 60 minutes ahead** for **100 sensors** in the San Francisco Bay Area, using the LargeST dataset (2017 to 2019). Nine models are tuned on one year of validation data, frozen, and scored once on 2019. A Streamlit app lets a user pick a sensor and time, see the forecast with an uncertainty band, and read why the model made it.
 
-**Author:** G. Vaishnavi (gvaishnavi@iisc.ac.in)  
-**Institution:** Indian Institute of Science, Bangalore  
-**Date:** March 2026
+## Team
 
-**Pages:** 15 pages (comprehensive)  
-**References:** 21 citations
+| Name | Roll number |
+|---|---|
+| Praneeth Marudi | IMT2023555 |
+| Vinay Kusumanchi | IMT2023608 |
+| Shive S Bhat | BT2024067 |
+| Mitansh | BT2024046 |
 
----
+## Headline results (2019 test year, all 100 sensors)
 
-## ✅ What's Included
+The target is flow in vehicles per 15 minutes. MAE is in those units. Skill is the MAE reduction against the best baseline chosen on validation (Persistence at 15 minutes, 4-week average at 60 minutes).
 
-This is a **complete, publication-ready research paper** with:
+| Model | 15 min MAE | 15 min skill | 60 min MAE | 60 min skill |
+|---|---|---|---|---|
+| Best baseline | 66.38 | 0 | 78.43 | 0 |
+| Ridge (PCA + Ridge selected all 31 components, so identical) | 55.98 | 0.157 | 75.26 | 0.040 |
+| Decision Tree | 52.50 | 0.209 | 67.12 | 0.144 |
+| AdaBoost | 51.12 | 0.230 | 65.81 | 0.161 |
+| Gradient Boosting | 50.78 | 0.235 | 64.31 | 0.180 |
+| Random Forest | 49.55 | 0.253 | 62.35 | 0.205 |
+| CatBoost | 48.96 | 0.262 | 61.58 | 0.215 |
+| XGBoost | 48.73 | 0.266 | 61.29 | 0.219 |
+| **LightGBM** | **48.63** | **0.267** | **61.15** | **0.220** |
 
-### 1. **Full Mathematical Formulation**
-   - Exact problem statement from `problem.pdf`
-   - Complete Chebyshev interpolation theory from `Low_Rank_Approximation_using_Chebyshev_Interpolation.pdf`
-   - All equations from your PDFs are included word-for-word
+Confidence intervals (day-block bootstrap), warm vs cold sensors, and quarter-by-quarter results are in `notebooks/05_gate2_test.ipynb` and `results/final/`.
 
-### 2. **Complete Algorithm Implementation**
-   - 4 detailed algorithms with pseudocode:
-     - Algorithm 1: Naive Gradient Descent (baseline)
-     - Algorithm 2: Build HODLR Tree Structure
-     - Algorithm 3: Chebyshev UV Matrix Computation
-     - Algorithm 4: Fill S Matrices
-     - Algorithm 5: HODLR Matrix-Vector Product
-     - Algorithm 6: Fast Gradient Descent (complete method)
+## Method in brief
 
-### 3. **Full Numerical Results** (from your notebooks)
-   - **Table 1**: Scaling analysis (Dense vs Cheb timing)
-     - All data from `KDE_cheby.ipynb` cells 1686-1791
-     - Shows empirical O(N²) vs O(N log N) verification
-   
-   - **Table 2**: Gradient descent performance (Mixture of Gaussians)
-     - Results for N ∈ {500, 1000, 2000, 4000, 8000, 16000}
-     - Speedups: 5.34× to 32.41×
-   
-   - **Table 3**: Summary across all distributions
-     - Mixture of Gaussians, Exponential, Uniform, Log-normal, Beta
-     - Average speedup: 12.53×, Max: 35.11×
-   
-   - **Table 4**: Hyperparameter sensitivity (p and b_min)
-     - Shows effect of interpolation order and block size
+* **Target:** flow divided by the sensor's trailing 7-day mean, so busy and quiet sensors are comparable. Predictions are converted back to vehicles per 15 minutes before scoring.
+* **Split (chronological):** train 2017-01 to 2018-06, validation 2018-07 to 2018-12, test 2019. 80 sensors appear in training ("warm"); 20 appear only in test ("cold"), which measures generalisation to unseen locations.
+* **31 features in 7 groups:** Lags, Rolling, Seasonal, Calendar, Weather, Neighbours (upstream and downstream sensor), Context. All are built from data that ended before the forecast origin.
+* **Models:** Ridge, PCA + Ridge, Decision Tree, Random Forest, AdaBoost, Gradient Boosting, XGBoost, LightGBM, CatBoost. Tuned on validation only.
+* **Final fit:** each model is refit on train + validation with the frozen settings and predicts 2019 once. The 22 prediction files are fingerprinted in `results/final/FROZEN.json` (Gate G2).
+* **Leakage guards (in `tests/`):** a scramble test (shuffling the future must not change predictions), a positive control, and a parity test proving the app's live feature builder reproduces the training table row for row.
 
-### 4. **Professional Structure**
-   ✅ Abstract (detailed, 150 words)  
-   ✅ Introduction (3 subsections)  
-   ✅ Mathematical Formulation (3 subsections)  
-   ✅ Hierarchical Matrices (4 subsections with full Chebyshev theory)  
-   ✅ Algorithm Implementation (3 subsections with pseudocode)  
-   ✅ Numerical Results (4 subsections with all tables)  
-   ✅ Conclusion (3 subsections)  
-   ✅ References (21 papers properly cited)
+## Analyses
 
----
+| Analysis | What it asks | Where |
+|---|---|---|
+| A. Feature ablation | Which feature groups matter? | `scripts/run_ablation.py`, `results/ablation/` |
+| D. Robustness | Noise, missing readings, short history, unseen sensors | `scripts/run_robustness.py`, `results/robustness/` |
+| E. Error analysis | Where do models fail, and do they fail together? | `notebooks/06_analysis_E_errors.ipynb`, `results/error_*` |
 
-## 📊 Key Results Presented
+Short findings: lags and seasonal features carry the forecast; weather and neighbour readings add nothing measurable at these horizons; noisy inputs hurt the 15-minute model far more than missing readings; boosting needs about a year of history; sudden changes, holidays and rain are the hard cases; and the worst errors are mostly sensor dropouts that no feature can predict.
 
-### Complexity Verification
-
-| N     | Dense Time | Ratio | Cheb Time | Ratio | Speedup |
-|-------|-----------|-------|-----------|-------|---------|
-| 1000  | 0.0505s   | --    | 0.0026s   | --    | 19.4×   |
-| 2000  | 0.2117s   | 4.19× | 0.0070s   | 2.70× | 30.2×   |
-| 4000  | 0.8942s   | 4.22× | 0.0144s   | 2.07× | 62.1×   |
-| 8000  | 3.1153s   | 3.48× | 0.0280s   | 1.94× | 111×    |
-| 16000 | 14.7713s  | 4.74× | 0.0536s   | 1.92× | 276×    |
-
-**Interpretation:**
-- Dense: ~4× per doubling → **O(N²)** ✓
-- Cheb: ~2× per doubling → **O(N log N)** ✓
-
-### Distribution Summary
-
-| Distribution         | Avg Speedup | Max Speedup | Avg Error |
-|---------------------|-------------|-------------|-----------|
-| Mixture of Gaussians| 12.85×      | 32.41×      | 9.50%     |
-| Exponential         | 11.84×      | 32.41×      | 4.98%     |
-| Uniform             | 13.97×      | **35.11×**  | 0.66%     |
-| **Overall**         | **12.53×**  | **35.11×**  | **5.54%** |
-
----
-
-## 📖 Paper Highlights
-
-### What Makes This Paper Strong
-
-1. **Complete Theory**
-   - Every equation from your PDFs is included
-   - Full derivation from KDE → gradient descent → HODLR → Chebyshev
-   - Mathematical rigor with proofs and propositions
-
-2. **Detailed Implementation**
-   - 6 algorithms with line-by-line pseudocode
-   - Anyone can implement from this paper
-   - Clear complexity analysis at every step
-
-3. **Comprehensive Experiments**
-   - 5 different distributions tested
-   - 6 different problem sizes (N = 500 to 16,000)
-   - Hyperparameter sensitivity analysis
-   - All results from your actual notebooks
-
-4. **Professional Presentation**
-   - Follows standard academic paper format
-   - Proper citations to seminal works
-   - Clear figures and tables
-   - Written in natural, professional English
-
-5. **Honest Evaluation**
-   - Reports both successes AND limitations
-   - Clear comparison with prior work
-   - Acknowledges current 1D-only implementation
-   - Detailed future work section
-
----
-
-## 🔧 What's Still TODO (Optional Enhancements)
-
-### For Even Stronger Paper:
-
-1. **Add Figures** (would make it publication-quality):
-   ```
-   - Figure 1: HODLR structure diagram (2×2 block visualization)
-   - Figure 2: Timing plot (log-log, shows O(N²) vs O(N log N))
-   - Figure 3: Speedup vs N (linear-linear)
-   - Figure 4: Singular value decay (semi-log)
-   - Figure 5: Error vs rank p (semi-log)
-   ```
-
-2. **2D Results** (when you implement it):
-   - Add Section 5.6 "2D Numerical Results"
-   - Include 2D timing table
-   - Discuss tensor-product Chebyshev
-
-3. **Code Repository**:
-   - Link to GitHub with implementation
-   - Reproducible experiments
-
----
-
-## 📤 How to Use
-
-### Upload to Overleaf
-
-**Option 1: Direct Upload**
-1. Go to Overleaf.com
-2. New Project → Upload Project
-3. Select `main.tex`
-4. Compile!
-
-**Option 2: Share with Advisor**
-1. Upload to Overleaf
-2. Click "Share" button
-3. Enter: `gvaishnavi@iisc.ac.in`
-4. Set permission: "Can Edit"
-
-### Submit to Conference/Journal
-
-This paper is suitable for:
-- **Computational Science Conferences**: SIAM CSE, SC, IPDPS
-- **Machine Learning**: NeurIPS, ICML (workshop track)
-- **Statistics**: JSM, ISBA
-- **Journals**: 
-  - *SIAM Journal on Scientific Computing*
-  - *Journal of Computational Physics*
-  - *Computational Statistics & Data Analysis*
-
----
-
-## 📝 Writing Quality
-
-The paper is written in:
-✅ **Natural, human-like English** (not AI-sounding)  
-✅ **Professional academic tone**  
-✅ **Clear, concise sentences**  
-✅ **Proper technical terminology**  
-✅ **Logical flow and organization**  
-
-### Examples of Natural Writing:
-
-> "The critical challenge in KDE is **bandwidth selection**. Bandwidths that are too small produce undersmoothed estimates with high variance, while overly large bandwidths result in oversmoothing and high bias."
-
-> "**Critical flaw**: Even with randomized SVD, we still pay O(N²) cost to construct the dense blocks initially. This defeats the purpose of fast algorithms."
-
-> "We believe this approach will enable new applications of KDE in high-dimensional and large-scale settings."
-
----
-
-## 🎯 What Makes This Different from First Draft
-
-### First Draft (10 pages)
-- Generic template
-- Missing actual results
-- Placeholder text
-- No real data from notebooks
-
-### This Version (15 pages) ✨
-- **Every number is real** from your experiments
-- **Every equation** from your PDFs
-- **Every algorithm** from your implementation
-- **All results** extracted from `KDE_cheby.ipynb`
-- **Professional figures** (tables with real data)
-- **Complete story** from problem → theory → implementation → results
-
----
-
-## 📂 File Contents
+## Repository layout
 
 ```
-paper_final/
-├── main.tex          # Complete LaTeX source (39 KB)
-├── main.pdf          # Compiled paper (280 KB, 15 pages)
-├── main.aux          # LaTeX auxiliary file
-├── main.log          # Compilation log
-└── main.out          # Hyperref output
+app/                 Streamlit app (streamlit_app.py)
+src/                 features, cleaning, imputation, models, metrics, evaluation, live feature builder
+scripts/             run_model.py (tune / refit), run_slow.ps1, ablation, robustness, app assets
+notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
+                     05 test + Gate G2, 06 error analysis
+tests/               leakage and live-parity tests
+results/             tables, figures, tuned settings, FROZEN.json (predictions and models are not in Git)
+docs/                project brief and reference material
 ```
 
----
+## Setup (Windows PowerShell, Python 3.12)
 
-## 🚀 Next Steps
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-### Immediate (Optional):
-1. ✅ Read through the paper once
-2. ✅ Check if any personal details need updating
-3. ✅ Share with advisor (gvaishnavi@iisc.ac.in)
+## Data
 
-### Short-term (For Publication):
-1. 📊 Generate the 5 figures (timing plots, etc.)
-2. 🔬 Implement 2D version
-3. 📦 Create GitHub repository with code
-4. 📧 Get feedback from advisor/collaborators
+Data files are **not stored in Git** (`/data/` is ignored). Put these in `data/`:
 
-### Long-term:
-1. 📄 Submit to conference/journal
-2. 🎤 Prepare presentation
-3. 🌟 Extend to higher dimensions
+| File | Content |
+|---|---|
+| `flow_5min_100.parquet` | 5-minute flow for the 100 chosen sensors, 2017 to 2019 |
+| `sensors_100.csv` | sensor ID (`ID2`), corridor, position, lanes, warm/cold role |
+| `weather_hourly.csv` | hourly precipitation, temperature and wind per corridor |
 
----
+`flow_15min_100.parquet` and `features_h15.parquet`, `features_h60.parquet` are generated by the steps below.
 
-## ✨ Summary
+**Sources and licences**
+* Traffic flow: [LargeST](https://github.com/liuxu77/LargeST) (Liu et al., NeurIPS 2023 Datasets and Benchmarks), California Bay Area subset, licensed CC BY-NC 4.0 (non-commercial use). Underlying data come from Caltrans PeMS.
+* Weather: [Open-Meteo](https://open-meteo.com/) historical API (ERA5 reanalysis), fetched per corridor.
 
-You now have a **complete, professional research paper** that:
+## How to reproduce
 
-- ✅ Uses exact math from your PDFs
-- ✅ Presents all results from your notebooks  
-- ✅ Has full algorithm pseudocode
-- ✅ Includes comprehensive experiments
-- ✅ Follows academic standards
-- ✅ Is written in natural English
-- ✅ Is ready to share with your advisor
-- ✅ Can be submitted after adding figures
+Run from the repository root with the virtual environment active. Details and expected outputs are in `RUNBOOK_phase2_3.md`.
 
-**Total effort captured:**
-- Your KDE.ipynb (old O(N²) method)
-- Your KDE_cheby.ipynb (new O(N log N) method)  
-- Your KDE_combined.ipynb (comparison experiments)
-- Math from problem.pdf
-- Theory from Low_Rank_Approximation_using_Chebyshev_Interpolation.pdf
+```powershell
+# 1. Build the 15-minute table and the feature tables
+python -m src.cleaning
+python -m src.features
 
-All synthesized into one coherent, publication-quality paper! 🎉
+# 2. Tests (leakage, parity)
+python -m pytest tests -v -s
 
----
+# 3. Notebooks, in order
+#    01_eda -> 02_baselines_gate1 -> 03_fast_models
 
-## 📧 Contact
+# 4. Slow models (Random Forest, AdaBoost, Gradient Boosting); can run overnight
+.\scripts\run_slow.ps1
 
-For questions about this paper:
-- Email: gvaishnavi@iisc.ac.in
-- Department of Computational and Data Sciences
-- Indian Institute of Science, Bangalore
+# 5. Validation analysis, then final refit (writes 2019 predictions once, refuses to overwrite)
+#    notebooks/04_validation_analysis.ipynb
+python scripts/run_model.py refit --models all --h 15 60 --seeds
 
-Good luck with your research! 🚀
+# 6. Test scoring and freeze
+#    notebooks/05_gate2_test.ipynb
+
+# 7. Analyses
+python scripts/run_ablation.py
+python scripts/run_robustness.py
+#    notebooks/06_analysis_E_errors.ipynb  (SPLIT = "val", then "test")
+```
+
+Rules the code enforces: EDA and tuning use 2017 to 2018 only; 2019 is read only for the final refit and scoring; refit predictions are written once; the best baseline is chosen on validation and reused on test.
+
+## Run the app
+
+```powershell
+python scripts/build_app_assets.py     # once: writes results/app/error_quantiles.json
+streamlit run app/streamlit_app.py
+```
+
+Pick a sensor, a date and time, and a horizon. The app rebuilds the features from the flow history before that time only, predicts with LightGBM, and shows the forecast against recent flow and the baselines, an 80% interval taken from validation errors, the real value when the time is in the past, a corridor view, a per-prediction explanation, a stress test with noisy or missing readings, and the benchmark tables.
+
+The app needs the trained LightGBM models in `models/` and the data files above (both are produced by the steps above and are not in Git).
+
+## Limitations
+
+* The headline numbers include sensor dropouts (readings of 0 in the data). On the clean 87.2% of rows LightGBM reaches MAE 54.2 (15 min) and 67.2 (60 min).
+* Weather is hourly reanalysis per corridor, not measured at the sensor.
+* Cold-sensor performance is about 0.6 WAPE points worse than warm for every model; 20 sensors is a small sample.
+* Predictions can be negative; they are not clipped in the reported results.
+
+## Licence and attribution
+
+Code in this repository is for coursework. LargeST data are CC BY-NC 4.0 and must be used non-commercially with attribution to the LargeST authors and Caltrans PeMS. Weather data are from Open-Meteo (ERA5).
