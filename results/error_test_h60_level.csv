@@ -1,0 +1,4 @@
+level,Ridge,PCA + Ridge,Decision Tree,Random Forest,AdaBoost,Gradient Boosting,XGBoost,LightGBM,CatBoost
+low flow,15.37,15.37,12.54,11.56,12.15,11.96,11.21,11.17,11.44
+mid flow,8.46,8.46,7.79,7.17,7.39,7.42,7.09,7.09,7.09
+high flow,6.15,6.15,5.62,5.29,5.73,5.43,5.21,5.19,5.21

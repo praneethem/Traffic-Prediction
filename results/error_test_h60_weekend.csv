@@ -1,0 +1,4 @@
+weekend,Ridge,PCA + Ridge,Decision Tree,Random Forest,AdaBoost,Gradient Boosting,XGBoost,LightGBM,CatBoost
+holiday,14.73,14.73,10.55,9.39,9.84,9.81,8.63,8.62,8.78
+weekday,8.15,8.15,7.26,6.8,7.13,7.01,6.71,6.69,6.74
+weekend,7.59,7.59,7.12,6.52,7.0,6.7,6.41,6.39,6.41
