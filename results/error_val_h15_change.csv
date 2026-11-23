@@ -1,0 +1,5 @@
+change,Ridge,PCA + Ridge,Decision Tree,Random Forest,AdaBoost,Gradient Boosting,XGBoost,LightGBM,CatBoost
+Q1 steady,3.93,3.93,3.62,3.26,3.46,3.74,3.39,3.35,3.42
+Q2,3.91,3.91,3.75,3.37,3.58,3.73,3.49,3.46,3.49
+Q3,5.19,5.19,4.82,4.48,4.67,4.63,4.42,4.4,4.46
+Q4 sudden,11.63,11.63,10.34,10.06,10.35,10.08,9.43,9.45,9.54

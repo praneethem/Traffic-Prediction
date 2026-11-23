@@ -1,0 +1,3 @@
+rain,Ridge,PCA + Ridge,Decision Tree,Random Forest,AdaBoost,Gradient Boosting,XGBoost,LightGBM,CatBoost
+dry,8.91,8.91,7.79,7.23,7.69,7.56,6.91,6.9,6.99
+rain,12.4,12.4,9.87,9.16,9.6,9.69,8.81,8.66,8.73
