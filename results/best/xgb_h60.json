@@ -1,0 +1,25 @@
+{
+  "model": "xgb",
+  "h": 60,
+  "params": {
+    "subsample": 1.0,
+    "reg_lambda": 1,
+    "min_child_weight": 1,
+    "max_depth": 8,
+    "learning_rate": 0.05,
+    "colsample_bytree": 1.0
+  },
+  "best_iter": 2088,
+  "val": {
+    "MAE": 62.144707637462325,
+    "RMSE": 100.76402753692474,
+    "WAPE": 0.06988100448540867,
+    "n": 350572
+  },
+  "fit_s_train": 204.21384954452515,
+  "predict_s_per_100k": 1.2586722827660366,
+  "tune_total_s": 985.9061195850372,
+  "tune_rows": 300001,
+  "fit_rows": 993004,
+  "smoke": false
+}

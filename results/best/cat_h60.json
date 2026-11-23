@@ -1,0 +1,22 @@
+{
+  "model": "cat",
+  "h": 60,
+  "params": {
+    "learning_rate": 0.1,
+    "l2_leaf_reg": 10,
+    "depth": 8
+  },
+  "best_iter": 2000,
+  "val": {
+    "MAE": 62.801243897849304,
+    "RMSE": 100.66501250409121,
+    "WAPE": 0.07061927191156804,
+    "n": 350572
+  },
+  "fit_s_train": 387.5774965286255,
+  "predict_s_per_100k": 0.15567786809758632,
+  "tune_total_s": 743.1952395439148,
+  "tune_rows": 300001,
+  "fit_rows": 993004,
+  "smoke": false
+}

@@ -1,0 +1,21 @@
+{
+  "model": "rf",
+  "h": 15,
+  "params": {
+    "min_samples_leaf": 20,
+    "max_features": 0.5
+  },
+  "best_iter": null,
+  "val": {
+    "MAE": 49.28570449425503,
+    "RMSE": 80.1629363725539,
+    "WAPE": 0.05541503052847337,
+    "n": 350587
+  },
+  "fit_s_train": 539.6621217727661,
+  "predict_s_per_100k": 3.5468029097327554,
+  "tune_total_s": 934.5786309242249,
+  "tune_rows": 300001,
+  "fit_rows": 992997,
+  "smoke": false
+}

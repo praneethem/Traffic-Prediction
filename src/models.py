@@ -49,7 +49,9 @@ SPACES = {
     "pca_ridge": ({"k": [5, 10, 20, 30, len(ALL_FEATURES)]}, None),
     "dt": ({"max_depth": [6, 10, 14, 18], "min_samples_leaf": [20, 50, 100]}, None),
     "rf": ({"min_samples_leaf": [20, 40], "max_features": [0.33, 0.5, 0.7]}, 4),
-    "ada": ({"max_depth": [3, 5], "learning_rate": [0.5, 1.0]}, None),
+    # first grid (kept for the report): {"max_depth": [3, 5], "learning_rate": [0.5, 1.0]} -> best sat on the grid edge,
+    # AdaBoost was worse than the naive baselines; widened to deeper trees and smaller learning rates (see notebook 04).
+    "ada": ({"max_depth": [8, 12], "learning_rate": [0.02, 0.05, 0.1]}, 4),
     "gb": ({"max_depth": [3, 5], "learning_rate": [0.05, 0.1]}, None),
     "xgb": ({"max_depth": [4, 6, 8], "learning_rate": [0.05, 0.1], "min_child_weight": [1, 10, 50],
              "subsample": [0.7, 1.0], "colsample_bytree": [0.7, 1.0], "reg_lambda": [1, 10]}, 6),
@@ -58,6 +60,7 @@ SPACES = {
     "cat": ({"depth": [6, 8], "learning_rate": [0.05, 0.1], "l2_leaf_reg": [3, 10]}, 4),
 }
 N_TREES = {"rf": 150, "ada": 100, "gb": 300}           # fixed tree counts for the bagging / classic boosting models
+ADA_LEAF = 50                                          # min_samples_leaf of AdaBoost's base tree (as tested in notebook 04)
 if SMOKE:
     N_TREES = {"rf": 10, "ada": 8, "gb": 25}
 MAX_ITER = {"xgb": 3000, "lgbm": 3000, "cat": 2000}
@@ -119,7 +122,7 @@ def make_model(name, params, n_estimators=None, early_stop=False, seed=SEED, n_j
                                      n_jobs=n_jobs, random_state=seed, **p)
     if name == "ada":
         depth = p.pop("max_depth")
-        base = DecisionTreeRegressor(max_depth=depth, random_state=seed)
+        base = DecisionTreeRegressor(max_depth=depth, min_samples_leaf=ADA_LEAF, random_state=seed)
         try:
             return AdaBoostRegressor(estimator=base, n_estimators=n_estimators or N_TREES["ada"], loss="linear",
                                      random_state=seed, **p)
