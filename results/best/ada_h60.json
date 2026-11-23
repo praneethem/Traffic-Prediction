@@ -1,0 +1,21 @@
+{
+  "model": "ada",
+  "h": 60,
+  "params": {
+    "max_depth": 12,
+    "learning_rate": 0.02
+  },
+  "best_iter": null,
+  "val": {
+    "MAE": 69.09224740599836,
+    "RMSE": 108.70752736202176,
+    "WAPE": 0.07769343254541214,
+    "n": 350572
+  },
+  "fit_s_train": 2076.1399896144867,
+  "predict_s_per_100k": 1.1140704746641765,
+  "tune_total_s": 3912.068123102188,
+  "tune_rows": 300001,
+  "fit_rows": 993004,
+  "smoke": false
+}
