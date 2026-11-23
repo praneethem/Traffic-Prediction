@@ -1,3 +1,5 @@
+> **Historical document.** It was written before the analyses and the data-preparation scripts existed. Do not run step 0 (the kit is already in the repository). For the current run order see the README.
+
 # Phase 2 + 3 runbook (run from C:\dev\traffic-prediction, venv active)
 
 ## 0. Install the kit (once)
