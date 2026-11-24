@@ -142,7 +142,7 @@ def main():
                    "Holiday morning, 25 Dec 2019": pd.Timestamp("2019-12-25 08:00"),
                    "Weekday in training data, 13 Mar 2018": pd.Timestamp("2018-03-13 08:00")}
         preset = st.selectbox("Quick examples", list(presets))
-        default = presets[preset] or pd.Timestamp("2019-06-11 08:00")
+        default = presets[preset] or pd.Timestamp("2019-03-12 17:00")
         default = min(max(default, first), last)
         d = st.date_input("Date", value=default.date(), min_value=first.date(), max_value=last.date())
         t = st.time_input("Time", value=default.time(), step=900)

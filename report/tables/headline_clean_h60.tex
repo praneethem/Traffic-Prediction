@@ -1,0 +1,19 @@
+\begin{tabular}{lrrrrr}
+\toprule
+Model & MAE & 95\% interval & RMSE & WAPE (\%) & Skill (\%) \\
+\midrule
+Persistence & 146.48 & {\small [144.79, 148.03]} & 205.48 & 15.86 & -66.3 \\
+Last week & 104.30 & {\small [100.57, 108.48]} & 173.13 & 11.29 & -18.4 \\
+4-week average & 88.10 & {\small [84.94, 91.49]} & 142.37 & 9.54 & +0.0 \\
+\midrule
+Ridge & 81.59 & {\small [80.03, 83.23]} & 121.29 & 8.84 & +7.4 \\
+PCA + Ridge & 81.59 & {\small [80.03, 83.23]} & 121.29 & 8.84 & +7.4 \\
+Decision Tree & 74.30 & {\small [73.17, 75.47]} & 113.29 & 8.05 & +15.7 \\
+Random Forest & 69.31 & {\small [68.23, 70.37]} & 106.33 & 7.51 & +21.3 \\
+AdaBoost & 73.01 & {\small [71.81, 74.13]} & 110.64 & 7.91 & +17.1 \\
+Gradient Boosting & 70.95 & {\small [69.88, 72.00]} & 107.61 & 7.68 & +19.5 \\
+XGBoost & 67.38 & {\small [66.40, 68.36]} & 104.32 & 7.30 & +23.5 \\
+LightGBM & \textbf{67.24} & {\small [66.27, 68.19]} & \textbf{103.83} & \textbf{7.28} & +23.7 \\
+CatBoost & 67.55 & {\small [66.54, 68.54]} & 103.94 & 7.32 & +23.3 \\
+\bottomrule
+\end{tabular}

@@ -124,7 +124,9 @@ def candidate_windows(q: pd.DataFrame) -> pd.DataFrame:
             length_km=round(float(gap[i:i + WINDOW - 1].sum()), 1),
             lanes=f"{int(w['Lanes'].min())}-{int(w['Lanes'].max())}",
             county="/".join(sorted(w["County"].unique()))))
-    return pd.DataFrame(rows).sort_values(["mean_usable", "valid_windows"], ascending=False)
+    cols = ["Fwy", "group_n", "valid_windows", "first_ID2", "last_ID2", "mean_usable", "max_gap_km",
+            "length_km", "lanes", "county"]
+    return pd.DataFrame(rows, columns=cols).sort_values(["mean_usable", "valid_windows"], ascending=False)
 
 
 def select_sensors(largest: str, out: str) -> pd.DataFrame:

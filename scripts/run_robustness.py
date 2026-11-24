@@ -12,6 +12,7 @@ Models are fitted once per horizon on ALL train rows with their frozen best conf
 
   python scripts/run_robustness.py --h 15 60
   python scripts/run_robustness.py --h 15 60 --models ridge dt lgbm xgb
+  python scripts/run_robustness.py --h 15 60 --models ada --rows 100000    # slow models: capped rows, merged into the CSV
   python scripts/run_robustness.py --plot-only
 Results: results/robustness/robust_h{h}.csv and results/figures/robust_h{h}.png.  --rows N caps training rows (testing)."""
 import argparse
@@ -46,22 +47,31 @@ def fit_full(name, h, tr, jobs):
     return fit_on(name, best, tr, jobs)
 
 
+def _dtype(m):
+    """Linear pipelines (Ridge, PCA+Ridge) are fitted and scored in float64: mean_1h is an exact linear combination of
+    four lag columns, so in float32 the weight on that direction is set by rounding, which does not matter on clean data
+    but changes the response to noise on the lags (Ridge and PCA+Ridge then differ by about 1.3 MAE)."""
+    return "float64" if hasattr(m, "steps") else "float32"
+
+
 def fit_on(name, best, df, jobs):
     p = dict(best["params"])
     m = mo.make_model(name, p, n_estimators=best.get("best_iter"), early_stop=False, n_jobs=jobs)
-    m, _, _ = mo.fit_model(name, m, df[ALL_FEATURES].to_numpy("float32"), df["y"].to_numpy("float32"))
+    dt = _dtype(m)
+    m, _, _ = mo.fit_model(name, m, df[ALL_FEATURES].to_numpy(dt), df["y"].to_numpy(dt))
     return m
 
 
 def score(m, va):
-    pv = m.predict(va[ALL_FEATURES].to_numpy("float32")).astype("float64") * va["sc"].to_numpy("float64")
+    pv = m.predict(va[ALL_FEATURES].to_numpy(_dtype(m))).astype("float64") * va["sc"].to_numpy("float64")
     return M.score(va["y_raw"], pv)
 
 
 def run(models, horizons, rows, jobs):
-    rng = np.random.default_rng(SEED)
     for h in horizons:
         tr = ev.load_table(h, ["train"])
+        n_all = len(tr)
+        all_sensors = np.array(sorted(tr["ID2"].unique()))      # fixed before any row cap
         if rows:
             tr = mo.month_stratified_subset(tr, rows)
         va = ev.load_table(h, ["val"])
@@ -69,6 +79,7 @@ def run(models, horizons, rows, jobs):
         fitted = {}
         for name in models:
             t0 = time.time()
+            rng = np.random.default_rng([SEED, h, mo.MODELS.index(name)])   # own stream: results do not depend on which models run together
             m = fit_full(name, h, tr, jobs)
             if m is None:
                 print(f"[{name} h={h}] skipped: no tuned config")
@@ -104,8 +115,8 @@ def run(models, horizons, rows, jobs):
             rec.append(dict(model=name, h=h, experiment="history", setting="all", MAE=full["MAE"], WAPE=full["WAPE"]))
             print(f"[{name} h={h}] reduced-history tests done")
 
-        sensors = np.array(sorted(tr["ID2"].unique()))                         # 4. unseen sensors
-        keep = set(rng.choice(sensors, size=len(sensors) // 2, replace=False).tolist())
+        sensors = all_sensors                                                  # 4. unseen sensors
+        keep = set(np.random.default_rng([SEED, h]).choice(sensors, size=len(sensors) // 2, replace=False).tolist())   # same half for every model
         tr_half = tr[tr["ID2"].isin(keep)]
         va_out = va[~va["ID2"].isin(keep)]
         for name in fitted:
@@ -116,6 +127,14 @@ def run(models, horizons, rows, jobs):
             rec.append(dict(model=name, h=h, experiment="sensors", setting="trained on half (unseen)", MAE=half["MAE"], WAPE=half["WAPE"]))
         print(f"[h={h}] sensor-holdout tests done ({len(va_out):,} validation rows from {len(sensors) - len(keep)} unseen sensors)")
         df = pd.DataFrame(rec)
+        df["train_rows"] = len(tr)
+        path = OUT / f"robust_h{h}.csv"
+        if path.exists():                                   # keep the models that were not rerun
+            old = pd.read_csv(path)
+            old = old[~old["model"].isin(df["model"].unique())]
+            if "train_rows" not in old.columns:
+                old["train_rows"] = n_all                   # earlier runs used every training row
+            df = pd.concat([old[df.columns.drop("MAE_change_pct", errors="ignore")], df], ignore_index=True)
         ref = df[df["experiment"] == "baseline"].set_index("model")["MAE"]
         df["MAE_change_pct"] = np.nan
         for ex in ("noise", "missing", "history"):
@@ -124,7 +143,7 @@ def run(models, horizons, rows, jobs):
         k = df["experiment"] == "sensors"
         allref = df[k & (df["setting"] == "trained on all")].set_index("model")["MAE"]
         df.loc[k, "MAE_change_pct"] = (df.loc[k, "MAE"] / df.loc[k, "model"].map(allref) - 1) * 100
-        df.to_csv(OUT / f"robust_h{h}.csv", index=False)
+        df.to_csv(path, index=False)
     plot()
 
 
