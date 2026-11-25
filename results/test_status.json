@@ -1,6 +1,6 @@
 {
-  "all_passed": false,
-  "tests_collected": 20,
+  "all_passed": true,
+  "tests_collected": 5,
   "tests_failed": 0,
-  "finished": "2026-11-25 13:19:04"
+  "finished": "2026-11-25 13:32:25"
 }
