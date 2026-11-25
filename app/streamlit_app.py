@@ -116,7 +116,43 @@ def origin_range(F):
 
 
 # ---------------------------------------------------------------------------------------------------- page
+REQUIRED_FILES = ["data/flow_15min_100.parquet", "data/sensors_100.csv", "data/weather_hourly.csv"]
+
+
+def missing_files():
+    """Files the app needs that are not on disk (data are not in Git unless they were added to the repository)."""
+    need = list(REQUIRED_FILES)
+    for h in (15, 60):
+        if not any((ROOT / "models" / f"lgbm_h{h}_{tag}.joblib").exists() for tag in ("final", "trainonly")):
+            need.append(f"models/lgbm_h{h}_final.joblib")
+    return [f for f in need if not (ROOT / f).exists()]
+
+
+def tidy(df):
+    """Fixed decimals for the benchmark tables (WAPE shown in %); returns (frame, column_config)."""
+    df = df.copy()
+    if "WAPE" in df.columns:                                       # leaderboards store WAPE as a fraction
+        df["WAPE %"] = df.pop("WAPE") * 100
+    cfg = {}
+    for c in df.columns:
+        if c in ("MAE", "RMSE", "MAE_lo", "MAE_hi", "WAPE %", "WAPE_%", "rows_kept_%"):
+            cfg[c] = st.column_config.NumberColumn(format="%.2f")
+        elif c.startswith("Skill"):
+            cfg[c] = st.column_config.NumberColumn(format="%.3f")
+    return df, cfg
+
+
 def main():
+    gone = missing_files()
+    if gone:
+        st.title("Bay Area freeway traffic forecast")
+        st.error("The app cannot start because some data or model files are missing:\n\n"
+                 + "\n".join(f"* `{f}`" for f in gone))
+        st.markdown("These files are large, so they are created locally rather than stored in Git. Build them by "
+                    "following **Get the data** and **How to reproduce** in the README (steps 0 and 1 for the data, "
+                    "then `python scripts/run_model.py refit --models lgbm --h 15 60` for the models), "
+                    "then run `python scripts/build_app_assets.py` once and restart the app.")
+        st.stop()
     F, S, W = load_data()
     first, last = origin_range(F)
     S = S.copy()
@@ -281,11 +317,13 @@ def main():
             lb = read_csv(ROOT / "results" / f"val_leaderboard_h{hh}.csv")
             if lb is not None:
                 col.markdown(f"{hh}-minute horizon")
-                col.dataframe(lb.drop(columns=[c for c in ("n",) if c in lb.columns]).round(3), hide_index=True, width="stretch")
+                lb, cfg = tidy(lb.drop(columns=[c for c in ("n",) if c in lb.columns]))
+                col.dataframe(lb, hide_index=True, width="stretch", column_config=cfg)
         ht = read_csv(ROOT / "results" / "final" / "headline_test_table.csv")
         if ht is not None:
             st.markdown("**Test year 2019 (scored once)**")
-            st.dataframe(ht.round(3), hide_index=True, width="stretch")
+            ht, cfg = tidy(ht)
+            st.dataframe(ht, hide_index=True, width="stretch", column_config=cfg)
         for title, name in [("Validation leaderboard against the baselines", "val_leaderboard"),
                             ("Test headline with confidence intervals", "test_headline"),
                             ("Feature groups: what happens when one is removed (15 min)", "ablation_h15"),

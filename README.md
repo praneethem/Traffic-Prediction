@@ -40,8 +40,9 @@ Confidence intervals (day-block bootstrap), warm vs cold sensors, and quarter-by
 | D. Robustness | Noise, missing readings, short history, unseen sensors (all nine models) | `scripts/run_robustness.py`, `results/robustness/` |
 | E. Error analysis | Where do models fail, and do they fail together? | `notebooks/06_analysis_E_errors.ipynb`, `results/error_*` |
 | Tuning sensitivity | How much could a wider search gain? (validation only, frozen models unchanged) | `scripts/run_tuning_sensitivity.py`, `results/tuning_sensitivity/` |
+| PCA study | Does dimensionality reduction help any model? PCA with k components feeding Ridge, Decision Tree, Random Forest and LightGBM (validation only) | `scripts/run_pca_study.py`, `results/pca_study/`, `results/figures/pca_study.png` |
 
-Short findings: the recent lags and the calendar carry the 15-minute forecast and the weekly pattern carries the 60-minute one; weather and neighbour readings add nothing measurable at these horizons; noisy inputs hurt the 15-minute model far more than missing readings; boosting needs about a year of history; sudden changes, holidays and rain are the hard cases; and the worst errors are mostly sensor dropouts that no feature can predict.
+Short findings: the recent lags and the calendar carry the 15-minute forecast and the weekly pattern carries the 60-minute one; weather and neighbour readings add nothing measurable at these horizons; noisy inputs hurt the 15-minute model far more than missing readings; boosting needs about a year of history; sudden changes, holidays and rain are the hard cases; and the worst errors are mostly sensor dropouts that no feature can predict. PCA never helped: Ridge loses nothing only when all 31 components are kept (it is a rotation of the same information), and the tree models get clearly worse on rotated features (for example LightGBM 54.7 against 50.3 at 15 minutes on the study subset), so the 31 features are kept as they are.
 
 ## Repository layout
 
@@ -53,9 +54,9 @@ scripts/             prepare_data.py, fetch_weather.py (build the data), run_mod
                      run_tuning_sensitivity, app assets
 notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
                      05 test + Gate G2, 06 error analysis
-tests/               leakage, live-parity and extra unit tests (11 tests)
+tests/               leakage, live-parity and extra unit tests (13 tests)
 report/              LaTeX report: main.tex, make_tables.py (builds tables and numbers from results/), figures, main.pdf
-results/             tables, figures, tuned settings, FROZEN.json (predictions and models are not in Git)
+results/             tables, figures, tuned settings, FROZEN.json (the 2019 predictions and all models except the two the app uses are not in Git)
 docs/                project brief and reference material
 ```
 
@@ -69,7 +70,7 @@ pip install -r requirements.txt
 
 ## Data
 
-Data files are **not stored in Git** (`/data/` is ignored). Three files are needed in `data/`:
+Most data files are **not stored in Git** (`/data/` is ignored; only the small files the app needs were added by force). Three files are needed in `data/`:
 
 | File | Content |
 |---|---|
@@ -148,6 +149,7 @@ python scripts/run_robustness.py
 python scripts/paired_bootstrap.py
 python scripts/compare_published.py
 python scripts/run_tuning_sensitivity.py --h 15 60 --models lgbm xgb cat
+python scripts/run_pca_study.py          # validation only, about 25 minutes
 
 # 9. Report (needs a LaTeX installation)
 python report/make_tables.py
@@ -165,7 +167,7 @@ streamlit run app/streamlit_app.py
 
 Pick a sensor, a date and time, and a horizon. The app rebuilds the features from the flow history before that time only, predicts with LightGBM, and shows the forecast against recent flow and the baselines, an 80% interval taken from validation errors, the real value when the time is in the past, a corridor view, a per-prediction explanation, a stress test with noisy or missing readings, and the benchmark tables.
 
-The app needs the trained LightGBM models in `models/` and the data files above (both are produced by the steps above and are not in Git).
+The app needs the trained LightGBM models in `models/` and the three data files above. The files it needs (`data/flow_15min_100.parquet`, `data/sensors_100.csv`, `data/weather_hourly.csv`, `models/lgbm_h15_final.joblib`, `models/lgbm_h60_final.joblib`, about 55 MB) are committed to this repository, so it runs right after cloning. If any of them is missing, the app lists what is missing and how to rebuild it instead of crashing.
 
 ## Limitations
 
