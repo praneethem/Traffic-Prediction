@@ -1,0 +1,14 @@
+\begin{tabular}{llrrrrrrr}
+\toprule
+Horizon & Model & No PCA & $k=4$ & $k=8$ & $k=10$ & $k=15$ & $k=20$ & $k=31$ \\
+\midrule
+15 min & Ridge & 57.4 & 94.3 & 84.6 & 81.0 & 78.0 & 67.2 & 57.4 \\
+ & Decision Tree & 55.4 & 84.4 & 80.9 & 78.1 & 77.3 & 74.3 & 73.8 \\
+ & Random Forest & 51.8 & -- & -- & 70.5 & -- & 65.5 & -- \\
+ & LightGBM & 50.3 & 81.6 & 70.0 & -- & 64.0 & -- & 54.7 \\
+60 min & Ridge & 80.5 & 139.5 & 115.9 & 107.3 & 105.9 & 88.5 & 80.5 \\
+ & Decision Tree & 76.3 & 112.8 & 102.5 & 99.6 & 99.8 & 96.2 & 95.4 \\
+ & Random Forest & 70.2 & -- & -- & 93.4 & -- & 88.2 & -- \\
+ & LightGBM & 66.2 & 108.0 & 85.7 & -- & 81.2 & -- & 71.9 \\
+\bottomrule
+\end{tabular}

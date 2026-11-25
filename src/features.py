@@ -36,7 +36,7 @@ def neighbour_index(sensors):
 
 def calendar_arrays(times):
     mod = (times.hour * 60 + times.minute).to_numpy()
-    dow = times.dayofweek.to_numpy()
+    dow = times.day_of_week.to_numpy()
     ca = holidays.country_holidays("US", subdiv="CA", years=range(2016, 2021))
     hol = pd.DatetimeIndex(sorted(ca.keys()))
     return dict(

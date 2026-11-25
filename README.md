@@ -54,7 +54,7 @@ scripts/             prepare_data.py, fetch_weather.py (build the data), run_mod
                      run_tuning_sensitivity, app assets
 notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
                      05 test + Gate G2, 06 error analysis
-tests/               leakage, live-parity and extra unit tests (13 tests)
+tests/               leakage, live-parity, unit and Streamlit app tests (18 tests)
 report/              LaTeX report: main.tex, make_tables.py (builds tables and numbers from results/), figures, main.pdf
 results/             tables, figures, tuned settings, FROZEN.json (the 2019 predictions and all models except the two the app uses are not in Git)
 docs/                project brief and reference material
@@ -165,7 +165,7 @@ python scripts/build_app_assets.py     # once: writes results/app/error_quantile
 streamlit run app/streamlit_app.py
 ```
 
-Pick a sensor, a date and time, and a horizon. The app rebuilds the features from the flow history before that time only, predicts with LightGBM, and shows the forecast against recent flow and the baselines, an 80% interval taken from validation errors, the real value when the time is in the past, a corridor view, a per-prediction explanation, a stress test with noisy or missing readings, and the benchmark tables.
+The app's files are committed, so it runs straight after cloning (`pip install -r requirements.txt`, then the command above); `python -m pytest tests/test_app.py` runs five automated interaction tests (start-up, a fixed forecast, both horizons with the stress controls, every corridor, and the message shown when a data file is missing). Pick a sensor, a date and time, and a horizon. The app rebuilds the features from the flow history before that time only, predicts with LightGBM, and shows the forecast against recent flow and the baselines, an 80% interval taken from validation errors, the real value when the time is in the past, a corridor view, a per-prediction explanation, a stress test with noisy or missing readings, and the benchmark tables.
 
 The app needs the trained LightGBM models in `models/` and the three data files above. The files it needs (`data/flow_15min_100.parquet`, `data/sensors_100.csv`, `data/weather_hourly.csv`, `models/lgbm_h15_final.joblib`, `models/lgbm_h60_final.joblib`, about 55 MB) are committed to this repository, so it runs right after cloning. If any of them is missing, the app lists what is missing and how to rebuild it instead of crashing.
 
