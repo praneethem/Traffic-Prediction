@@ -29,7 +29,10 @@ def raw(root):
 @pytest.mark.parametrize("h", [15, 60])
 def test_live_equals_table(h, raw, root):
     F, S, W = raw
-    table = pd.read_parquet(root / "data" / f"features_h{h}.parquet")
+    feature_file = root / "data" / f"features_h{h}.parquet"
+    if not feature_file.exists():
+        pytest.skip(f"{feature_file.name} is generated, not stored in Git: build it with steps 0 and 1 of the README, then rerun")
+    table = pd.read_parquet(feature_file)
     table["time"] = pd.to_datetime(table["time"])
     rng = np.random.default_rng(11)
     origins = []
