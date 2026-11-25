@@ -178,9 +178,7 @@ The app needs the trained LightGBM models in `models/` and the three data files 
 * **Weather** is hourly ERA5 reanalysis per corridor, not measured at the sensor, and in live use a real weather feed would be needed. It added no measurable accuracy (analysis A).
 * **Cold sensors** have no rows in training, but their own recent flow history is still used as input (for the sensor scale and lags). They are about 0.6 WAPE points worse than warm sensors for every model, and 20 sensors is a small sample.
 
-## Licence and attribution
 
-Code in this repository is for coursework. LargeST data are CC BY-NC 4.0 and must be used non-commercially with attribution to the LargeST authors and Caltrans PeMS. Weather data are from Open-Meteo (ERA5).
 
 ## Team
 
@@ -189,4 +187,4 @@ Code in this repository is for coursework. LargeST data are CC BY-NC 4.0 and mus
 | Praneeth Marudi | IMT2023555 |
 | Vinay Kusumanchi | IMT2023608 |
 | Shive S Bhat | BT2024067 |
-| Mitansh | BT2024046 |
+| Mitansh Shringi | BT2024046 |
