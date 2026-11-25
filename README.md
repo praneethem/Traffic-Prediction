@@ -54,10 +54,9 @@ scripts/             prepare_data.py, fetch_weather.py (build the data), run_mod
                      run_tuning_sensitivity, app assets
 notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
                      05 test + Gate G2, 06 error analysis
-tests/               leakage, live-parity, unit and Streamlit app tests (18 tests)
+tests/               leakage, live-parity, data-integrity, unit and Streamlit app tests (20 tests)
 report/              LaTeX report: main.tex, make_tables.py (builds tables and numbers from results/), figures, main.pdf
 results/             tables, figures, tuned settings, FROZEN.json (the 2019 predictions and all models except the two the app uses are not in Git)
-docs/                project brief and reference material
 ```
 
 ## Setup (Windows PowerShell, Python 3.12)
@@ -151,7 +150,9 @@ python scripts/compare_published.py
 python scripts/run_tuning_sensitivity.py --h 15 60 --models lgbm xgb cat
 python scripts/run_pca_study.py          # validation only, about 25 minutes
 
-# 9. Report (needs a LaTeX installation)
+# 9. Report (needs a LaTeX installation). The generated tables are committed in report/tables/, so a plain
+#    `cd report; pdflatex main.tex` (twice) works straight after cloning; make_tables.py regenerates them and
+#    needs the feature tables built in steps 0 and 1.
 python report/make_tables.py
 cd report; pdflatex main.tex; pdflatex main.tex
 ```
