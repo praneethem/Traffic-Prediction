@@ -2,7 +2,7 @@
 
 Topic 4 (Traffic Prediction), machine learning course project.
 
-We forecast freeway traffic flow **15 and 60 minutes ahead** for **100 sensors** in the San Francisco Bay Area, using the LargeST dataset (2017 to 2019). Nine models are tuned on one year of validation data, frozen, and scored once on 2019. A Streamlit app lets a user pick a sensor and time, see the forecast with an uncertainty band, and read why the model made it.
+We forecast freeway traffic flow **15 and 60 minutes ahead** for **100 sensors** in the San Francisco Bay Area, using the LargeST dataset (2017 to 2019). Nine models are tuned on one year of validation data, frozen and scored once on 2019. A Streamlit app lets a user pick a sensor and time, see the forecast with an uncertainty band, and read why the model made it.
 
 ## Headline results (2019 test year, all 100 sensors)
 
