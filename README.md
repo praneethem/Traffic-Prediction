@@ -55,7 +55,7 @@ scripts/             prepare_data.py, fetch_weather.py (build the data), run_mod
 notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
                      05 test + Gate G2, 06 error analysis
 tests/               leakage, live-parity, data-integrity, unit and Streamlit app tests (20 tests)
-report/              LaTeX report: main.tex, make_tables.py (builds tables and numbers from results/), figures, main.pdf
+report/              LaTeX report: Traffic_Prediction_Report_final.tex, make_tables.py, figures, Traffic_Prediction_Report.pdf
 results/             tables, figures, tuned settings, FROZEN.json (the 2019 predictions and all models except the two the app uses are not in Git)
 ```
 
@@ -150,11 +150,8 @@ python scripts/compare_published.py
 python scripts/run_tuning_sensitivity.py --h 15 60 --models lgbm xgb cat
 python scripts/run_pca_study.py          # validation only, about 25 minutes
 
-# 9. Report (needs a LaTeX installation). The generated tables are committed in report/tables/, so a plain
-#    `cd report; pdflatex main.tex` (twice) works straight after cloning; make_tables.py regenerates them and
-#    needs the feature tables built in steps 0 and 1.
-python report/make_tables.py
-cd report; pdflatex main.tex; pdflatex main.tex
+# 9. Report (needs a LaTeX installation). The generated tables are committed in report/tables/.
+cd report; pdflatex Traffic_Prediction_Report_final.tex; pdflatex Traffic_Prediction_Report_final.tex
 ```
 
 Rules the code enforces: EDA and tuning use 2017 to 2018 only; 2019 is read only for the final refit and scoring; refit predictions are written once; the best baseline is chosen on validation and reused on test.
