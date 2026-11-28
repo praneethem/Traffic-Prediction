@@ -1,4 +1,4 @@
-# Traffic Flow Forecasting on Bay Area Freeways
+﻿# Traffic Flow Forecasting on Bay Area Freeways
 
 Topic 4 (Traffic Prediction), machine learning course project.
 
@@ -54,7 +54,7 @@ scripts/             prepare_data.py, fetch_weather.py (build the data), run_mod
                      run_tuning_sensitivity, app assets
 notebooks/           01 EDA, 02 baselines + Gate G1, 03 fast models, 04 validation analysis,
                      05 test + Gate G2, 06 error analysis
-tests/               leakage, live-parity, data-integrity, unit and Streamlit app tests (20 tests)
+tests/               20 tests: 17 pass on a fresh clone; 3 require generated data files
 report/              LaTeX report: Traffic_Prediction_Report_final.tex, make_tables.py, figures, Traffic_Prediction_Report.pdf
 results/             tables, figures, tuned settings, FROZEN.json (the 2019 predictions and all models except the two the app uses are not in Git)
 ```
@@ -185,3 +185,4 @@ The app needs the trained LightGBM models in `models/` and the three data files 
 | Vinay Kusumanchi | IMT2023608 |
 | Shive S Bhat | BT2024067 |
 | Mitansh Shringi | BT2024046 |
+

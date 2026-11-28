@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+﻿\documentclass[11pt,a4paper]{article}
 \usepackage[margin=2.2cm,headheight=14pt]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -308,7 +308,7 @@ Permutation importance agrees: for LightGBM at 15 minutes the latest flow alone 
 \subsection{Analysis D: robustness and sensitivity}
 Models are fitted once with frozen settings and stressed on validation: multiplicative noise on the five lag readings; the latest reading missing (replaced by the one before, as a live system would); only the last $m$ months of training data; and refitting on half the warm sensors and scoring on the other half. Table~\ref{tab:rob} gives the MAE increase.
 \textbf{Noise hurts far more than missing data} (a wrong reading misleads the model, a missing one is replaced by a nearly as good value), and the 15-minute model is more fragile because it leans on the latest values. Boosted trees need history (only 3 months costs LightGBM +8.7\% and +13.3\%), whereas Ridge barely cares. Unseen sensors cost little at 15 minutes and more at 60. The noise test touches only the lags, so it understates the harm of a truly noisy sensor. The 3-month history test was run for three models (Ridge, Decision Tree, LightGBM); the other tests cover all nine (Table~\ref{tab:rob}, Figure~\ref{fig:rob}).
-\textbf{Implications for deployment.} A live system should put its effort into detecting and filtering bad or noisy sensor readings, since a gap can be filled almost for free but a wrong value cannot; boosted trees should be trained on at least a year of history (12 months costs under 1\%, 6 months about 7\%); and a newly installed sensor can be forecast 15 minutes ahead at a small cost (+3.3\% for LightGBM) but needs its own history before 60-minute forecasts are trusted (+8.1\%).
+\textbf{Implications for deployment.} A live system should put its effort into detecting and filtering bad or noisy sensor readings, since a gap can be filled almost for free but a wrong value cannot; boosted trees should be trained on at least a year of history (12 months costs under 1\%, while 6 months costs 7.5\% at 15 minutes and 11.9\% at 60 minutes for LightGBM); and a newly installed sensor can be forecast 15 minutes ahead at a small cost (+3.3\% for LightGBM) but needs its own history before 60-minute forecasts are trusted (+8.1\%).
 
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrrrrrr}
@@ -325,7 +325,7 @@ XGBoost & +29.0 & +6.4 & +4.4 & -- & +10.3 & +1.9 & +8.7 & -- \\
 LightGBM & +26.0 & +6.3 & +3.3 & +8.7 & +8.8 & +2.0 & +8.1 & +13.3 \\
 CatBoost & +26.9 & +6.5 & +3.1 & -- & +8.6 & +2.0 & +6.7 & -- \\ \bottomrule
 \end{tabular}
-\caption{Increase in validation MAE (\%) under stress: noise = 10\% multiplicative noise on the lag readings; Miss.\ = latest reading missing in 30\% of rows; Unseen = scored on sensors not used in training; 3 mo = only 3 months of training history (``--'' = not run).}\label{tab:rob}
+\caption{Increase in validation MAE (\%) under stress: noise = 10\% multiplicative noise on the lag readings; Miss.\ = latest reading missing in 30\% of rows; Unseen = scored on sensors not used in training; 3 mo = only 3 months of training history (``--'' = not run). Gradient Boosting was trained on 150,000 rows and AdaBoost on 100,000 rows, smaller subsets than the other models.}\label{tab:rob}
 \end{table}
 
 \begin{figure}[H]\centering
@@ -334,7 +334,7 @@ CatBoost & +26.9 & +6.5 & +3.1 & -- & +8.6 & +2.0 & +6.7 & -- \\ \bottomrule
 \end{figure}
 
 \subsection{Analysis E: error analysis}
-We split the 2019 errors of the final model by segment (WAPE, \%; Table~\ref{tab:err}). The hard cases are \textbf{sudden changes} (WAPE roughly triples from the steadiest to the most sudden quartile), \textbf{holidays}, \textbf{rain} and \textbf{low flow} (a small count gives a larger percentage). Peak hours are not especially hard.
+We split the 2019 errors of the final model by segment (WAPE, \%; Table~\ref{tab:err}). The hard cases are \textbf{sudden changes} (WAPE is about 3.1 times higher in the most sudden quartile than in the steadiest at 15 minutes, and 2.3 times at 60), \textbf{holidays}, \textbf{rain} and \textbf{low flow} (a small count gives a larger percentage). Peak hours are not especially hard.
 The worst 1\% of rows carry about 8\% of the total absolute error and are mostly \textbf{feed outages}: on 2019-09-20 at 12:00, 18 of the 100 sensors read exactly 0 and 30 were below 20\% of their usual level. No feature can predict a dropout, so part of the error is data quality, not forecasting.
 \textbf{Across models} (Figure~\ref{fig:err}) all nine models struggle in the same places, so these are properties of the data, not of one method. The differences lie in how badly: Ridge degrades much more than the boosted trees on holidays (WAPE 1.35$\times$ LightGBM's at 15 minutes and 1.71$\times$ at 60), at low flow (1.27$\times$, 1.38$\times$) and on sudden changes (1.23$\times$, 1.30$\times$), while XGBoost, CatBoost and LightGBM stay within about 0.3 WAPE points of each other in every segment. The Random Forest is slightly better than LightGBM on the steadiest 15-minute rows (2.91\% vs 3.06\%), and every model is worst on the same segments.
 
@@ -370,8 +370,8 @@ Five tabs: \emph{Forecast} (last 24 hours, the same hours a week earlier, the fo
 A \emph{stress test} marks the latest reading missing or adds 0--30\% noise (analysis D made interactive). The app warns when the chosen time lies in the training years, shows a clear message when a data file is missing, and is covered by five automated interaction tests.
 
 \begin{figure}[H]\centering
-\begin{subfigure}{0.34\linewidth}\includegraphics[width=\linewidth]{app_forecast.png}\caption{Forecast tab.}\end{subfigure}\hfill
-\begin{subfigure}{0.34\linewidth}\includegraphics[width=\linewidth]{app_explain.png}\caption{Explanation tab.}\end{subfigure}
+\begin{subfigure}{0.30\linewidth}\includegraphics[width=\linewidth]{app_forecast.png}\caption{Forecast tab.}\end{subfigure}\hfill
+\begin{subfigure}{0.30\linewidth}\includegraphics[width=\linewidth]{app_explain.png}\caption{Explanation tab.}\end{subfigure}
 \caption{The Streamlit app.}
 \end{figure}
 
@@ -380,14 +380,14 @@ A \emph{stress test} marks the latest reading missing or adds 0--30\% noise (ana
 \textbf{Limitations.} (1) The headline is flattered by template sensor-days (about 10\%), so the clean-rows view is the fairer one. (2) Feed outages cause the largest errors and cannot be forecast. (3) Weather is reanalysis taken at the origin, not a forecast, and added nothing. (4) The tuning budget is small and the top three models are practically tied. (5) The data is 100 sensors on four corridors in one region, up to 2019, and we tried no graph model. (6) The app's interval is an empirical band, and the model cannot see incidents that the recent readings do not show.
 
 \textbf{Conclusions.} We built and tested a complete traffic forecasting pipeline: 100 Bay Area sensors, 15-minute data cleaned without using the future, 31 features in seven groups, and nine models, with three simple baselines as the reference, tuned on validation and scored once on the unseen year 2019.
-The main finding is that gradient-boosted trees, led by LightGBM, cut the error of the best baseline by 26.7\% at 15 minutes (MAE 48.63 against 66.38) and 22.0\% at 60 minutes (61.15 against 78.43), and the gain holds in every quarter of 2019 and across random seeds, while sensors never seen in training are only 0.6 WAPE points worse. XGBoost and CatBoost are statistically indistinguishable in practice, so the choice among the three can follow cost and convenience; LightGBM is the best on accuracy, size and speed together.
+The main finding is that gradient-boosted trees, led by LightGBM, cut the error of the best baseline by 26.7\% at 15 minutes (MAE 48.63 against 66.38) and 22.0\% at 60 minutes (61.15 against 78.43), and the gain holds in every quarter of 2019 and across random seeds, while sensors never seen in training are only 0.6 WAPE points worse. XGBoost and CatBoost are within 0.33 vehicles of LightGBM, so the top three are practically tied; LightGBM is best on accuracy and also small and fast.
 
 The analyses explain why. Recent flow carries the 15-minute forecast and last week's pattern with the calendar carries the 60-minute one; weather and neighbour readings add nothing measurable, and PCA never helps. The models cope with a missing latest reading far better than with a noisy one, and they need about a year of history. The largest errors come from data outages, sudden changes and holidays, which are limits of the data rather than of one method.
 
 Leakage controls make these numbers trustworthy: a chronological split with a purge, tuning on validation only, a scramble test with a positive control, a live-parity test and frozen test predictions. Compared with published graph networks, our error relative to persistence at 60 minutes is in the same range as theirs at 90 minutes, with a model that is far smaller, faster to train and explainable, which we regard as a strong result for this scale; we do not claim to beat them.
 The result is also usable: the Streamlit app gives a forecast, an 80\% interval and a per-prediction explanation from the same code as the tests. Next steps are a measured weather and incident feed, a graph model for the neighbour structure, and a wider tuning search.
 
-\begin{thebibliography}{9}\footnotesize\setlength{\itemsep}{0pt}
+\begin{thebibliography}{9}\scriptsize\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
 \bibitem{largest} LargeST benchmark dataset (Bay Area traffic, 2017--2019; also the source of the published comparison results). X.~Liu et al., NeurIPS Datasets and Benchmarks 2023. \url{https://github.com/liuxu77/LargeST}
 \bibitem{pems} Caltrans Performance Measurement System (PeMS), the original loop-detector data. \url{https://pems.dot.ca.gov}
 \bibitem{openmeteo} Open-Meteo historical weather API (ERA5 reanalysis), hourly precipitation, temperature and wind. \url{https://open-meteo.com}
@@ -395,3 +395,4 @@ The result is also usable: the Streamlit app gives a forecast, an 80\% interval 
 \bibitem{d2stgnn} Z.~Shao et al. Decoupled dynamic spatial-temporal graph neural network for traffic forecasting. PVLDB 2022 (comparison method). \url{https://arxiv.org/abs/2206.09112}
 \end{thebibliography}
 \end{document}
+
